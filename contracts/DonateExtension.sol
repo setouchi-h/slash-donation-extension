@@ -18,26 +18,17 @@ contract DonateExtension is ISlashCustomPlugin, Ownable {
         string calldata,
         bytes calldata reserved
     ) external payable override {
-        if (amount > 0) {
+        if (amount <= 0) {
             revert DonateExtension__InvalidAmount();
         }
 
         address receipt = 0x274A766227e95ED5470b4d6E5dCC3a4E446fF213;
-        uint256 donationAmount = amount / 10;
+        uint256 donationAmount = amount * 10 / 100;
         uint256 receiveAmount = amount - donationAmount;
 
         IERC20(receiveToken).universalTransferFrom(msg.sender, receipt, donationAmount);
         IERC20(receiveToken).universalTransferFrom(msg.sender, owner(), receiveAmount);
-        // do something
-        // donate(reserved);
     }
-
-    // function donate(address recipient, uint256 donateAmount) internal {
-    //     (bool success, ) = payable(recipient).call{value: address(this).balance}("")
-    //     if (!success) {
-    //         revert DonateExtension__TransferFailed();
-    //     }
-    // }
 
     function supportSlashExtensionInterface() external pure override returns (uint8) {
         return 2;
